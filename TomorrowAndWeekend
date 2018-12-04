@@ -1,0 +1,66 @@
+-- When 'True', show tomorrow's jobs except on Fridays display upcoming Sat-Mon jobs, on Saturday's display upcoming Sun-Mon jobs.
+
+case 
+	
+when
+	(DAYOFWEEK(CURRENT_DATE())=1)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY))) 
+    then 'True'
+when 
+	(DAYOFWEEK(CURRENT_DATE())=1)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 2 DAY))) and DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)) in (SELECT b.`date` FROM TSG_Holidays)
+    then 'True'
+    -- On Sun show Mon
+
+when
+	(DAYOFWEEK(CURRENT_DATE())=2)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)))
+    then 'True'
+when
+	(DAYOFWEEK(CURRENT_DATE())=2)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 2 DAY))) and DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)) in (SELECT b.`date` FROM TSG_Holidays)
+    then 'True'
+    -- On Mon show Tue
+
+when
+	(DAYOFWEEK(CURRENT_DATE())=3)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)))
+    then 'True'
+when
+	(DAYOFWEEK(CURRENT_DATE())=3)
+	and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 2 DAY))) and DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)) in (SELECT b.`date` FROM TSG_Holidays)
+    then 'True'
+    -- on Tue show Wed
+	 
+when
+	(DAYOFWEEK(CURRENT_DATE())=4)
+    and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)))
+    then 'True'
+when
+	(DAYOFWEEK(CURRENT_DATE())=4)
+    and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 2 DAY))) -- and DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)) in (SELECT b.`date` FROM TSG_Holidays)
+    then 'True'
+    -- On Wed show Thur
+
+when
+	(DAYOFWEEK(CURRENT_DATE())=5)
+    and (DATE(`JobDate`) = DATE(ADDDATE(CURRENT_DATE(), INTERVAL 1 DAY)))
+    then 'True'
+    -- On Thur show Fri
+
+when
+	(DAYOFWEEK(CURRENT_DATE())=6)
+    -- Change to 4 when holidays on Monday. 3 When Normal week.
+    and (DATE(`JobDate`) <= DATE(ADDDATE(CURRENT_DATE(), INTERVAL 3 DAY)))
+    and (DATE(`JobDate`) > DATE(ADDDATE(CURRENT_DATE(), INTERVAL 0 DAY)))
+    then 'True'
+ 	-- on Fri show upcoming sat, sun, mon
+	 
+when
+	(DAYOFWEEK(CURRENT_DATE())=7)
+    and (DATE(`JobDate`) <= DATE(ADDDATE(CURRENT_DATE(), INTERVAL 2 DAY)))
+    and (DATE(`JobDate`) > DATE(ADDDATE(CURRENT_DATE(), INTERVAL 0 DAY)))
+    then 'True'
+    -- on Sat show upcoming sun, mon
+	
+else 'False' end				
